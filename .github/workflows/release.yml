@@ -117,7 +117,9 @@ jobs:
 
           cp ../KEY.asc KEY.asc
           cp ../install.sh install.sh
-          cp ../README.md index.md
+          rm -f index.md
+          ../render-index.sh ../README.md . > index.html
+          cp ../LICENSE LICENSE
           touch .nojekyll
 
           git add -A
