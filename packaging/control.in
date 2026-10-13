@@ -1,0 +1,15 @@
+Package: wsl2-ssh-agent
+Version: @VERSION@
+Architecture: @ARCH@
+Maintainer: Christian Boehm <c.boehm@computertechnik-boehm.com>
+Installed-Size: @SIZE@
+Recommends: openssh-client
+Section: net
+Priority: optional
+Homepage: https://github.com/mame/wsl2-ssh-agent
+Description: bridge from WSL2 ssh client to the Windows ssh-agent
+ Listens on a UNIX socket inside WSL2 and forwards agent requests via
+ PowerShell.exe to the Windows OpenSSH agent named pipe. Works with any
+ agent serving that pipe, e.g. Windows ssh-agent.exe or 1Password.
+ .
+ Enable per user with: systemctl --user enable --now wsl2-ssh-agent

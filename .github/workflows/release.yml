@@ -1,0 +1,125 @@
+name: release
+
+on:
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Upstream version without "v" (empty = latest)'
+        required: false
+      revision:
+        description: 'Debian revision'
+        required: false
+        default: '1'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Determine version
+        id: ver
+        run: |
+          VERSION="${{ inputs.version }}"
+          if [ -z "$VERSION" ]; then
+            VERSION="$(gh api repos/mame/wsl2-ssh-agent/releases/latest --jq .tag_name)"
+            VERSION="${VERSION#v}"
+          fi
+          REVISION="${{ inputs.revision || '1' }}"
+          TAG="v${VERSION}-${REVISION}"
+          echo "version=$VERSION"   >> "$GITHUB_OUTPUT"
+          echo "revision=$REVISION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG"           >> "$GITHUB_OUTPUT"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "skip=true"  >> "$GITHUB_OUTPUT"
+            echo "$TAG already released, nothing to do."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build packages
+        if: steps.ver.outputs.skip == 'false'
+        run: |
+          for arch in amd64 arm64; do
+            ./build-deb.sh "${{ steps.ver.outputs.version }}" "$arch" "${{ steps.ver.outputs.revision }}"
+          done
+
+      - name: Lint (warn only)
+        if: steps.ver.outputs.skip == 'false'
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq lintian
+          lintian --no-tag-display-limit dist/*.deb || true
+
+      - name: Import signing key
+        if: steps.ver.outputs.skip == 'false'
+        env:
+          APT_SIGNING_KEY: ${{ secrets.APT_SIGNING_KEY }}
+        run: |
+          echo "$APT_SIGNING_KEY" | gpg --batch --import
+          gpg --list-secret-keys --keyid-format long
+
+      - name: Update apt repository (gh-pages)
+        if: steps.ver.outputs.skip == 'false'
+        env:
+          APT_SIGNING_PASSPHRASE: ${{ secrets.APT_SIGNING_PASSPHRASE }}
+        run: |
+          git config --global user.name  "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git ls-remote --exit-code --heads origin gh-pages >/dev/null; then
+            git worktree add repo origin/gh-pages
+            git -C repo checkout -B gh-pages
+          else
+            git worktree add --orphan -b gh-pages repo
+          fi
+
+          cd repo
+          POOL=pool/main/w/wsl2-ssh-agent
+          mkdir -p "$POOL"
+          cp ../dist/*.deb "$POOL/"
+
+          for arch in amd64 arm64; do
+            d=dists/stable/main/binary-$arch
+            mkdir -p "$d"
+            apt-ftparchive --arch "$arch" packages pool > "$d/Packages"
+            gzip -9kf "$d/Packages"
+          done
+
+          apt-ftparchive \
+            -o APT::FTPArchive::Release::Origin="ChristianBoehm" \
+            -o APT::FTPArchive::Release::Label="wsl2-ssh-agent" \
+            -o APT::FTPArchive::Release::Suite="stable" \
+            -o APT::FTPArchive::Release::Codename="stable" \
+            -o APT::FTPArchive::Release::Architectures="amd64 arm64" \
+            -o APT::FTPArchive::Release::Components="main" \
+            release dists/stable > dists/stable/Release
+
+          GPG=(gpg --batch --yes --pinentry-mode loopback --passphrase "${APT_SIGNING_PASSPHRASE}")
+          "${GPG[@]}" --clearsign -o dists/stable/InRelease  dists/stable/Release
+          "${GPG[@]}" -abs        -o dists/stable/Release.gpg dists/stable/Release
+
+          cp ../KEY.asc KEY.asc
+          cp ../README.md index.md
+          touch .nojekyll
+
+          git add -A
+          git commit -m "Publish ${{ steps.ver.outputs.tag }}"
+          git push origin gh-pages
+
+      - name: Create GitHub release
+        if: steps.ver.outputs.skip == 'false'
+        run: |
+          gh release create "${{ steps.ver.outputs.tag }}" dist/*.deb \
+            --title "wsl2-ssh-agent ${{ steps.ver.outputs.version }}-${{ steps.ver.outputs.revision }}" \
+            --notes "Packaged from upstream https://github.com/mame/wsl2-ssh-agent/releases/tag/v${{ steps.ver.outputs.version }}"
