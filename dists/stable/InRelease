@@ -1,0 +1,41 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Architectures: amd64 arm64
+Codename: stable
+Components: main
+Date: Tue, 13 Oct 2026 09:56:29 +0000
+Label: wsl2-ssh-agent
+Origin: ChristianBoehm
+Suite: stable
+MD5Sum:
+ 67ab6f64f23d94befdca7660362426c2              158 Release
+ d3213210f647fa7d1234a571e3bf037b              982 main/binary-amd64/Packages
+ c31c82383bd4d33cf02251bafca130a0              654 main/binary-amd64/Packages.gz
+ 9c99533a3c2cda94422884c794be1de2              982 main/binary-arm64/Packages
+ 4f747fc8f6a169486e662416880320f4              652 main/binary-arm64/Packages.gz
+SHA1:
+ c9fc4c297e069d050833148141360acc46df9854              158 Release
+ 6e55704cd319eaa7e031f20e90edfa41052a3973              982 main/binary-amd64/Packages
+ d472f862ddc36d665116c087a30487195538b879              654 main/binary-amd64/Packages.gz
+ a30bbb47622983a7e97c8ba12f0adb8a6b6a64c6              982 main/binary-arm64/Packages
+ 241bded7073850ca2da7e84c9cfd1ed74f67a0e4              652 main/binary-arm64/Packages.gz
+SHA256:
+ 179ade1538bad8a39f93a1bc577fd256929a8c9a2277de553e1417d696cf4878              158 Release
+ def4b8873f9441effbbca9dba4b1e7e11295c42cbb7813616ac717ab67cc21ff              982 main/binary-amd64/Packages
+ b10f9f447db9e8ab2e96fc2bb0a63a3d022a2a1b6485c5595fd54739594637ad              654 main/binary-amd64/Packages.gz
+ 504abd41968cd4040bef1ed1260768955af16f5cf908bdf9e039f58dfa5b636b              982 main/binary-arm64/Packages
+ 25f5bb102665e7f6a7eff82a7167cc0f2639f8234865ce2e6d3f8c34141c137a              652 main/binary-arm64/Packages.gz
+SHA512:
+ d8c1f398ac61f1822fdef66745bb0ba297175215cf9e21eac5a51ad68359a3cfc6592ca6d80f87b77cf4654a57515fa261cd9050558a353204094ea51d89a4cd              158 Release
+ 2d1d07986b31a06c01d46a062046b925f62b2b6b9fefa79365fc5101294c572a204db41f6a1abd8e7abf3d49af4c2b7a587d17950b53d5ecde67618577836242              982 main/binary-amd64/Packages
+ 120e20b36b3a18d96483deb40a577c98863c013c629968fe757f6db5ae8173720de617c1560e3dd9caae50f7a4b1b868b00601a19d0565458407c627b96820f1              654 main/binary-amd64/Packages.gz
+ a3831cdaa3241aeab6f1fc8c981686d7f2913cc3557ed015662a55c29a47c858214bb5678308b7489f672d1cf0351651391f504a3a6f015a094875285d565285              982 main/binary-arm64/Packages
+ 4a80077e8b2ed01638899b823b63f17750ff5289168530c4a2afd47fc8253ca56123671cdb1cef23581cfdac267c2f3d2af64b3ed9788efe755c0c41dc3d3705              652 main/binary-arm64/Packages.gz
+-----BEGIN PGP SIGNATURE-----
+
+iHUEARYKAB0WIQT2niDCBjhjreVvDuBWRbSmzc9tgAUCas4ATQAKCRBWRbSmzc9t
+gDhsAQDM96WYWJGHAPj23ydqJJEaBLB/V5frOt6s5v6KaBxisAEA4Wn0m7iSbdeJ
+v8Uf5nGujO99FuzDzAlJHi2L/mOW+A8=
+=C9gC
+-----END PGP SIGNATURE-----

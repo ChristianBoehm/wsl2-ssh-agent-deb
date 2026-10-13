@@ -1,0 +1,22 @@
+Package: wsl2-ssh-agent
+Architecture: arm64
+Version: 0.9.7-1
+Priority: optional
+Section: net
+Maintainer: Christian Boehm <c.boehm@computertechnik-boehm.com>
+Installed-Size: 2492
+Recommends: openssh-client
+Filename: pool/main/w/wsl2-ssh-agent/wsl2-ssh-agent_0.9.7-1_arm64.deb
+Size: 763204
+MD5sum: 47dbe3740abb4af7e615d948d4dff7ae
+SHA1: b2e5b71b857b1c2551d02848e7f52a9ef50e2849
+SHA256: ffbf37a3384d4b4959afac5820ef971b474f6370b6deda5d692af66f9b70e395
+SHA512: fb07f8a9bf26ab4f175d01709c484e71411f50a3d10e2c84f1a99c6af369bc5c0fd1f03e3afb6c5209b0d6ae4667166ecec14297cf9355df065a0427acaeb8ad
+Homepage: https://github.com/mame/wsl2-ssh-agent
+Description: bridge from WSL2 ssh client to the Windows ssh-agent
+ Listens on a UNIX socket inside WSL2 and forwards agent requests via
+ PowerShell.exe to the Windows OpenSSH agent named pipe. Works with any
+ agent serving that pipe, e.g. Windows ssh-agent.exe or 1Password.
+ .
+ Enable per user with: systemctl --user enable --now wsl2-ssh-agent
+
