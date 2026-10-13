@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>wsl2-ssh-agent — Debian / Ubuntu packages</title>
+<style>
+  :root { color-scheme: light dark; --fg:#1f2328; --bg:#fff; --muted:#59636e; --border:#d1d9e0; --code:#f6f8fa; --link:#0969da; }
+  @media (prefers-color-scheme: dark) { :root { --fg:#e6edf3; --bg:#0d1117; --muted:#9198a1; --border:#3d444d; --code:#151b23; --link:#4493f8; } }
+  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; }
+  main { max-width:860px; margin:0 auto; padding:32px 20px 64px; }
+  a { color:var(--link); text-decoration:none; } a:hover { text-decoration:underline; }
+  h1,h2 { border-bottom:1px solid var(--border); padding-bottom:.3em; } h1 { margin-top:0; }
+  code { background:var(--code); padding:.2em .4em; border-radius:6px; font-size:85%; }
+  pre { background:var(--code); padding:16px; border-radius:6px; overflow:auto; }
+  pre code { background:none; padding:0; font-size:85%; }
+  table { border-collapse:collapse; width:100%; margin:16px 0; display:block; overflow:auto; }
+  th,td { border:1px solid var(--border); padding:6px 13px; text-align:left; }
+  details { margin:16px 0; } summary { cursor:pointer; font-weight:600; }
+  img { max-width:100%; vertical-align:middle; }
+  .markdown-heading .anchor { display:none; }
+  footer { color:var(--muted); font-size:14px; margin-top:48px; }
+</style>
+</head>
+<body>
+<main>
+<h1 dir="auto">wsl2-ssh-agent — Debian / Ubuntu packages</h1>
+<p dir="auto"><a href="https://github.com/ChristianBoehm/wsl2-ssh-agent-deb/actions/workflows/release.yml"><img src="https://github.com/ChristianBoehm/wsl2-ssh-agent-deb/actions/workflows/release.yml/badge.svg" alt="release" style="max-width: 100%;"></a><br>
+<a href="https://github.com/ChristianBoehm/wsl2-ssh-agent-deb/releases/latest"><img src="https://camo.githubusercontent.com/8fc7e5b6b31c1002a63c1024a9ee0039dc859c3db376b45ab590331a00389416/68747470733a2f2f696d672e736869656c64732e696f2f6769746875622f762f72656c656173652f43687269737469616e426f65686d2f77736c322d7373682d6167656e742d646562" alt="latest" data-canonical-src="https://img.shields.io/github/v/release/ChristianBoehm/wsl2-ssh-agent-deb" style="max-width: 100%;"></a><br>
+<a href="LICENSE"><img src="https://camo.githubusercontent.com/33dff63add5bf87866e99a9ecb06ca512a4d29c0bff6e0466fc1157b1005d36b/68747470733a2f2f696d672e736869656c64732e696f2f6769746875622f6c6963656e73652f43687269737469616e426f65686d2f77736c322d7373682d6167656e742d646562" alt="license" data-canonical-src="https://img.shields.io/github/license/ChristianBoehm/wsl2-ssh-agent-deb" style="max-width: 100%;"></a></p>
+<p dir="auto">Use your <strong>Windows SSH agent</strong> — e.g. <strong>1Password</strong> — from <code class="notranslate">ssh</code> and <code class="notranslate">git</code> inside <strong>WSL2</strong>.</p>
+<p dir="auto">This repo publishes a signed apt repository with <code class="notranslate">.deb</code> packages of<br>
+<a href="https://github.com/mame/wsl2-ssh-agent">mame/wsl2-ssh-agent</a>. New upstream releases are<br>
+packaged automatically.</p>
+<pre class="notranslate"><code class="notranslate">ssh / git (WSL2) ──► wsl2-ssh-agent.sock ──► PowerShell.exe ──► \\.\pipe\openssh-ssh-agent ──► 1Password / ssh-agent.exe
+</code></pre>
+<h2 dir="auto">Quick start</h2>
+<div class="highlight highlight-source-shell" dir="auto"><pre class="notranslate">curl -fsSL https://christianboehm.github.io/wsl2-ssh-agent-deb/install.sh <span class="pl-k">|</span> bash</pre></div>
+<p dir="auto">Then open a new terminal and check:</p>
+<div class="highlight highlight-source-shell" dir="auto"><pre class="notranslate">ssh-add -l               <span class="pl-c"><span class="pl-c">#</span> lists the keys from your Windows agent</span>
+ssh -T git@github.com    <span class="pl-c"><span class="pl-c">#</span> "Hi &lt;user&gt;! You've successfully authenticated…"</span></pre></div>
+<h2 dir="auto">Requirements</h2>
+<p dir="auto"><strong>WSL2</strong> with systemd (default on current Ubuntu/Debian WSL images), amd64 or arm64.</p>
+<p dir="auto"><strong>Windows</strong>, one of:</p>
+<ul dir="auto">
+<li><strong>1Password</strong> — <em>Settings → Developer → Use the SSH agent</em>. Stop and disable the Windows service<br>
+<em>OpenSSH Authentication Agent</em>, otherwise it occupies the same pipe.</li>
+<li><strong>Windows OpenSSH agent</strong> — service <em>OpenSSH Authentication Agent</em> running.</li>
+</ul>
+<h2 dir="auto">What the installer does</h2>
+<ol dir="auto">
+<li>Downloads the repository key and checks its fingerprint</li>
+<li>Adds the apt source <code class="notranslate">/etc/apt/sources.list.d/wsl2-ssh-agent.sources</code></li>
+<li>Installs <code class="notranslate">wsl2-ssh-agent</code> and enables the systemd user service</li>
+<li>Warns if the Windows OpenSSH agent would conflict with 1Password, then tests <code class="notranslate">ssh-add -l</code></li>
+</ol>
+<details>
+<summary>Manual installation</summary>
+<div class="highlight highlight-source-shell" dir="auto"><pre class="notranslate">curl -fsSL https://christianboehm.github.io/wsl2-ssh-agent-deb/KEY.asc \
+  <span class="pl-k">|</span> sudo gpg --dearmor -o /usr/share/keyrings/cboehm-archive-keyring.gpg
+
+sudo tee /etc/apt/sources.list.d/wsl2-ssh-agent.sources <span class="pl-k">&gt;</span>/dev/null <span class="pl-s"><span class="pl-k">&lt;&lt;</span>'<span class="pl-k">EOF</span>'</span>
+<span class="pl-s">Types: deb</span>
+<span class="pl-s">URIs: https://christianboehm.github.io/wsl2-ssh-agent-deb</span>
+<span class="pl-s">Suites: stable</span>
+<span class="pl-s">Components: main</span>
+<span class="pl-s">Signed-By: /usr/share/keyrings/cboehm-archive-keyring.gpg</span>
+<span class="pl-s"><span class="pl-k">EOF</span></span>
+
+sudo apt update <span class="pl-k">&amp;&amp;</span> sudo apt install wsl2-ssh-agent
+systemctl --user <span class="pl-c1">enable</span> --now wsl2-ssh-agent</pre></div>
+</details>
+<h2 dir="auto">Update &amp; uninstall</h2>
+<div class="highlight highlight-source-shell" dir="auto"><pre class="notranslate">sudo apt update <span class="pl-k">&amp;&amp;</span> sudo apt upgrade        <span class="pl-c"><span class="pl-c">#</span> updates come through apt</span>
+
+systemctl --user disable --now wsl2-ssh-agent
+sudo apt remove wsl2-ssh-agent
+sudo rm /etc/apt/sources.list.d/wsl2-ssh-agent.sources /usr/share/keyrings/cboehm-archive-keyring.gpg</pre></div>
+<h2 dir="auto">Package contents</h2>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>Path</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="notranslate">/usr/bin/wsl2-ssh-agent</code></td>
+<td>upstream binary, SHA-256 verified against upstream <code class="notranslate">checksums.txt</code></td>
+</tr>
+<tr>
+<td><code class="notranslate">/usr/lib/systemd/user/wsl2-ssh-agent.service</code></td>
+<td>upstream user unit, socket at <code class="notranslate">$XDG_RUNTIME_DIR/wsl2-ssh-agent.sock</code></td>
+</tr>
+<tr>
+<td><code class="notranslate">/etc/profile.d/wsl2-ssh-agent.sh</code></td>
+<td>sets <code class="notranslate">SSH_AUTH_SOCK</code> when the socket exists</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h2 dir="auto">Troubleshooting</h2>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="notranslate">SSH_AUTH_SOCK</code> empty</td>
+<td>open a new terminal, or <code class="notranslate">source /etc/profile.d/wsl2-ssh-agent.sh</code></td>
+</tr>
+<tr>
+<td><code class="notranslate">ssh-add -l</code>: <em>communication with agent failed</em></td>
+<td>check <code class="notranslate">systemctl --user status wsl2-ssh-agent</code>; enable the 1Password SSH agent</td>
+</tr>
+<tr>
+<td>keys from the wrong agent</td>
+<td>stop/disable the Windows <em>OpenSSH Authentication Agent</em> service</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h2 dir="auto">Repository signing key</h2>
+<p dir="auto"><a href="KEY.asc"><code class="notranslate">KEY.asc</code></a> — OpenPGP Ed25519, signs the repository <code class="notranslate">Release</code> files.</p>
+<pre class="notranslate"><code class="notranslate">C07B F7B1 982F F6CC 6C54  4DF9 E780 6B47 427C 8FE8
+</code></pre>
+<h2 dir="auto">Building locally</h2>
+<div class="highlight highlight-source-shell" dir="auto"><pre class="notranslate">./build-deb.sh 0.9.7 amd64      <span class="pl-c"><span class="pl-c">#</span> → dist/wsl2-ssh-agent_0.9.7-1_amd64.deb</span></pre></div>
+<h2 dir="auto">License</h2>
+<p dir="auto">Packaging scripts: <a href="LICENSE">MIT</a> © Christian Boehm.<br>
+<code class="notranslate">wsl2-ssh-agent</code> itself: <a href="https://github.com/mame/wsl2-ssh-agent/blob/master/LICENSE">MIT</a> © Yusuke Endoh —<br>
+this project is not affiliated with upstream.</p>
+<h2>Files</h2>
+<table><thead><tr><th>Package</th><th>Size</th><th>Date</th></tr></thead><tbody>
+<tr><td><a href="pool/main/w/wsl2-ssh-agent/wsl2-ssh-agent_0.9.7-1_arm64.deb">wsl2-ssh-agent_0.9.7-1_arm64.deb</a></td><td>745.4KiB</td><td>2026-10-13</td></tr>
+<tr><td><a href="pool/main/w/wsl2-ssh-agent/wsl2-ssh-agent_0.9.7-1_amd64.deb">wsl2-ssh-agent_0.9.7-1_amd64.deb</a></td><td>861.0KiB</td><td>2026-10-13</td></tr>
+</tbody></table>
+<p><a href="dists/stable/InRelease">InRelease</a> ·
+<a href="dists/stable/main/binary-amd64/Packages">Packages (amd64)</a> ·
+<a href="dists/stable/main/binary-arm64/Packages">Packages (arm64)</a> ·
+<a href="KEY.asc">KEY.asc</a> ·
+<a href="install.sh">install.sh</a></p>
+<footer>Source: <a href="https://github.com/ChristianBoehm/wsl2-ssh-agent-deb">github.com/ChristianBoehm/wsl2-ssh-agent-deb</a></footer>
+</main>
+</body>
+</html>
