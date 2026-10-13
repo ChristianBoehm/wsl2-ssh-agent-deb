@@ -15,6 +15,7 @@ on:
 
 permissions:
   contents: write
+  actions: write   # keepalive: re-enable this workflow
 
 concurrency:
   group: release
@@ -27,6 +28,11 @@ jobs:
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
+
+      # GitHub disables scheduled workflows after 60 days without repo activity;
+      # re-enabling resets that timer without creating commits.
+      - name: Keepalive
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/release.yml/enable"
 
       - name: Determine version
         id: ver
