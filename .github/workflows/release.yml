@@ -110,6 +110,7 @@ jobs:
           "${GPG[@]}" -abs        -o dists/stable/Release.gpg dists/stable/Release
 
           cp ../KEY.asc KEY.asc
+          cp ../install.sh install.sh
           cp ../README.md index.md
           touch .nojekyll
 

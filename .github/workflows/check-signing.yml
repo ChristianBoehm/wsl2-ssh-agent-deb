@@ -1,0 +1,26 @@
+name: check-signing
+
+# Verifies that APT_SIGNING_KEY + APT_SIGNING_PASSPHRASE can sign, without publishing anything.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sign and verify test file
+        env:
+          APT_SIGNING_KEY: ${{ secrets.APT_SIGNING_KEY }}
+          APT_SIGNING_PASSPHRASE: ${{ secrets.APT_SIGNING_PASSPHRASE }}
+        run: |
+          echo "$APT_SIGNING_KEY" | gpg --batch --import
+          echo "test $(date -u)" > test.txt
+          gpg --batch --yes --pinentry-mode loopback --passphrase "$APT_SIGNING_PASSPHRASE" \
+            --clearsign -o test.txt.asc test.txt
+          gpg --dearmor < KEY.asc > key.gpg
+          gpgv --keyring ./key.gpg test.txt.asc

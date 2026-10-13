@@ -9,6 +9,13 @@ A GitHub Action checks upstream daily and publishes new versions automatically.
 ## Install
 
 ```bash
+curl -fsSL https://christianboehm.github.io/wsl2-ssh-agent-deb/install.sh | bash
+```
+
+The script pins the key fingerprint, adds the apt source, installs the package, enables the user
+service and checks the Windows side. Manual steps:
+
+```bash
 curl -fsSL https://christianboehm.github.io/wsl2-ssh-agent-deb/KEY.asc \
   | sudo gpg --dearmor -o /usr/share/keyrings/cboehm-archive-keyring.gpg
 
