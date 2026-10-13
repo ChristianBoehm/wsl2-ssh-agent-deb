@@ -59,4 +59,4 @@ Check with `ssh-add -l`.
 
 `KEY.asc` — OpenPGP Ed25519 key used to sign the repository `Release` files.
 
-Fingerprint: `0FBA C575 3A1D 3024 F8F1  9F12 2FBF 7F20 A4DA 842E`
+Fingerprint: `C07B F7B1 982F F6CC 6C54  4DF9 E780 6B47 427C 8FE8`

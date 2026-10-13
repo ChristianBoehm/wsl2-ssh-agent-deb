@@ -7,7 +7,7 @@ set -euo pipefail
 BASE=https://christianboehm.github.io/wsl2-ssh-agent-deb
 KEYRING=/usr/share/keyrings/cboehm-archive-keyring.gpg
 SOURCES=/etc/apt/sources.list.d/wsl2-ssh-agent.sources
-FPR=0FBAC5753A1D3024F8F19F122FBF7F20A4DA842E
+FPR=C07BF7B1982FF6CC6C544DF9E7806B47427C8FE8
 
 step() { printf '\n\033[1;34m==> %s\033[0m\n' "$*"; }
 warn() { printf '\033[1;33m!! %s\033[0m\n' "$*"; }
