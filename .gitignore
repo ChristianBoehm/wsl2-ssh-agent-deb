@@ -1,1 +1,14 @@
+# Build output
 dist/
+
+# Local maintainer scripts (key setup / passphrase rotation)
+maintainer-setup.sh
+rotate-passphrase.sh
+
+# Never commit private key material (KEY.asc = public key, stays tracked)
+*-secret.asc
+*.rev
+*.gpg
+*.key
+*.p12
+.env
